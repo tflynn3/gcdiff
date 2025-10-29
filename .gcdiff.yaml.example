@@ -1,0 +1,22 @@
+# Example gcdiff configuration
+# Copy this to ~/.gcdiff.yaml or ./.gcdiff.yaml
+
+# Default projects for comparison
+# Command-line flags will override these values
+project1: my-prod-project
+project2: my-staging-project
+
+# Fields to ignore when comparing (exact matches)
+ignore_fields:
+  - id
+  - selfLink
+  - creationTimestamp
+  - lastModifiedTimestamp
+  - fingerprint
+  - kind
+  - etag
+
+# Regex patterns for fields to ignore
+ignore_patterns:
+  - ".*Timestamp$"
+  - ".*Fingerprint$"

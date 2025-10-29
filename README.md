@@ -142,9 +142,13 @@ If both instances are named "web-server" and have identical configurations, gcdi
 
 ## Configuration
 
-Create a `.gcdiff.yaml` file in your home directory or current directory to customize field filtering:
+Create a `.gcdiff.yaml` file in your home directory or current directory to customize behavior:
 
 ```yaml
+# Default projects (optional - command-line flags override these)
+project1: my-prod-project
+project2: my-staging-project
+
 # Fields to ignore when comparing (exact matches)
 ignore_fields:
   - id
@@ -158,6 +162,21 @@ ignore_fields:
 ignore_patterns:
   - ".*Timestamp$"
   - ".*Fingerprint$"
+```
+
+### Default Projects
+
+Setting `project1` and `project2` in your config file allows you to run commands without specifying `--project1` and `--project2` every time:
+
+```bash
+# Without config
+gcdiff resource firewall rule-1 rule-2 --project1=prod --project2=staging
+
+# With config file setting project1 and project2
+gcdiff resource firewall rule-1 rule-2
+
+# Override config with command-line flags
+gcdiff resource firewall rule-1 rule-2 --project1=different-project
 ```
 
 You can override the config location with `--config`:

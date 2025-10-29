@@ -8,6 +8,12 @@ import (
 
 // Config represents the gcdiff configuration
 type Config struct {
+	// Project1 is the default first GCP project ID
+	Project1 string `yaml:"project1"`
+
+	// Project2 is the default second GCP project ID
+	Project2 string `yaml:"project2"`
+
 	// IgnoreFields is a list of field paths to ignore when comparing resources
 	// Supports nested paths like "metadata.creationTimestamp"
 	IgnoreFields []string `yaml:"ignore_fields"`

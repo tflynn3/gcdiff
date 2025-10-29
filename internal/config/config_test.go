@@ -67,7 +67,9 @@ func TestLoad_ValidConfig(t *testing.T) {
 	tmpDir := t.TempDir()
 	configPath := filepath.Join(tmpDir, "test-config.yaml")
 
-	configContent := `ignore_fields:
+	configContent := `project1: my-prod-project
+project2: my-staging-project
+ignore_fields:
   - customField1
   - customField2
 ignore_patterns:
@@ -81,6 +83,14 @@ ignore_patterns:
 	cfg, err := Load(configPath)
 	if err != nil {
 		t.Fatalf("Load failed: %v", err)
+	}
+
+	if cfg.Project1 != "my-prod-project" {
+		t.Errorf("Expected project1 to be 'my-prod-project', got %q", cfg.Project1)
+	}
+
+	if cfg.Project2 != "my-staging-project" {
+		t.Errorf("Expected project2 to be 'my-staging-project', got %q", cfg.Project2)
 	}
 
 	if len(cfg.IgnoreFields) != 2 {
