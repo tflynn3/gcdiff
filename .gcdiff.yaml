@@ -1,0 +1,18 @@
+# Example gcdiff configuration file
+# Place this in your home directory as ~/.gcdiff.yaml or in your project root
+
+# Fields to ignore when comparing (exact field path matches)
+ignore_fields:
+  - id
+  - selfLink
+  - creationTimestamp
+  - lastModifiedTimestamp
+  - fingerprint
+  - kind
+  - etag
+
+# Regex patterns for fields to ignore
+ignore_patterns:
+  - ".*Timestamp$"
+  - ".*Fingerprint$"
+  - ".*[Ee]tag$"
