@@ -10,12 +10,26 @@ A terminal tool for comparing and auditing GCP resources across projects.
 
 ## Features
 
+- ✨ **Dynamic resource support** - compare **ANY** GCP resource type without explicit code
 - 🔍 **Deep comparison** of GCP resources with field-level granularity
 - 🎨 **Git-style diff output** with color-coded changes
 - ⚙️ **Configurable field filtering** to ignore auto-generated or timestamp fields
 - 🔐 **Uses gcloud auth** - leverages your existing authentication
 - 🌍 **Cross-project support** - compare resources across different GCP projects
 - 📦 **Easy installation** via Homebrew
+
+### Instantly Supported Resources
+
+Because gcdiff uses `gcloud` CLI under the hood, **all GCP resources are automatically supported**:
+- Compute Engine (instances, disks, snapshots, images, etc.)
+- Cloud Storage (buckets)
+- Networking (VPCs, subnets, firewalls, routes, load balancers)
+- Cloud Run (services, jobs)
+- Cloud SQL (instances, databases)
+- Pub/Sub (topics, subscriptions)
+- IAM (service accounts, roles)
+- GKE (clusters, node pools)
+- And literally **every other GCP resource** that gcloud supports!
 
 ## Installation
 
@@ -37,24 +51,50 @@ Download pre-built binaries from the [releases page](https://github.com/tflynn3/
 
 ## Quick Start
 
+### Compute Instances
 ```bash
-# Compare two compute instances in the same project
+# Compare two instances (backward-compatible command)
 gcdiff compute instance-1 instance-2 \
   --project1=my-project \
   --zone1=us-central1-a
 
-# Compare instances across projects
-gcdiff compute prod-web staging-web \
-  --project1=prod-project \
-  --project2=staging-project \
-  --zone1=us-central1-a \
-  --zone2=us-west1-b
-
-# Show all fields (including normally ignored ones)
-gcdiff compute instance-1 instance-2 \
+# Or use the universal resource command
+gcdiff resource compute instance-1 instance-2 \
   --project1=my-project \
-  --zone1=us-central1-a \
-  --show-all
+  --zone1=us-central1-a
+```
+
+### Any GCP Resource
+```bash
+# Firewall rules
+gcdiff resource firewall my-rule-1 my-rule-2 \
+  --project1=my-project
+
+# Storage buckets
+gcdiff resource storage my-bucket-1 my-bucket-2 \
+  --project1=my-project
+
+# Cloud Run services
+gcdiff resource run my-service-1 my-service-2 \
+  --project1=my-project \
+  --region1=us-central1
+
+# VPC networks
+gcdiff resource network my-vpc-1 my-vpc-2 \
+  --project1=my-project
+
+# Cloud SQL instances
+gcdiff resource sql my-db-1 my-db-2 \
+  --project1=my-project
+```
+
+### Cross-Project Comparison
+```bash
+# Verify staging matches production
+gcdiff resource compute web-server web-server \
+  --project1=my-prod-project \
+  --project2=my-staging-project \
+  --zone1=us-central1-a
 ```
 
 ## Authentication
@@ -122,15 +162,40 @@ gcdiff compute instance-1 instance-2 --config=/path/to/config.yaml
 
 ## Supported Resources
 
-Currently supported:
-- ✅ Compute Instances
+**All GCP resources are supported dynamically!** 🎉
 
-Coming soon:
-- 🔜 VPC Networks & Subnets
-- 🔜 Firewall Rules
-- 🔜 Cloud Storage Buckets
-- 🔜 IAM Policies
-- 🔜 And more...
+The tool uses `gcloud` CLI commands under the hood, which means any resource that gcloud can describe is automatically supported. No code changes needed to add support for new resource types!
+
+### Built-in Shortcuts
+
+For convenience, these resource types have built-in shortcuts:
+- `compute` - Compute Engine instances
+- `firewall` - Compute Engine firewall rules
+- `network` - VPC networks
+- `subnet` - VPC subnets
+- `disk` - Compute Engine disks
+- `storage` - Cloud Storage buckets
+- `run` - Cloud Run services
+- `sql` - Cloud SQL instances
+- `pubsub-topic` - Pub/Sub topics
+- `pubsub-subscription` - Pub/Sub subscriptions
+- `iam-service-account` - IAM service accounts
+
+### Advanced Usage
+
+You can also compare any GCP resource by providing the gcloud resource path:
+
+```bash
+# GKE clusters
+gcdiff resource "container clusters" cluster-1 cluster-2 \
+  --project1=my-project \
+  --zone1=us-central1-a
+
+# Cloud Functions
+gcdiff resource "functions" function-1 function-2 \
+  --project1=my-project \
+  --region1=us-central1
+```
 
 ## Example Output
 
