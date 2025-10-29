@@ -8,7 +8,6 @@ import (
 	"strings"
 )
 
-
 // PrintGitStyleDiffV2 prints a diff with arrays shown inline with markers
 func PrintGitStyleDiffV2(w io.Writer, diff *Diff, name1, name2 string) {
 	fmt.Fprintf(w, "%s\n", bold(fmt.Sprintf("Comparing: %s <-> %s", name1, name2)))
