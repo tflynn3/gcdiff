@@ -166,11 +166,47 @@ git clone https://github.com/tflynn3/gcdiff.git
 cd gcdiff
 
 # Build
-go build -o gcdiff ./cmd/gcdiff
+make build
+# or: go build -o gcdiff ./cmd/gcdiff
 
-# Run
+# Run tests
+make test
+
+# Run tests with coverage
+make coverage
+
+# Format and lint
+make fmt
+make lint
+
+# Run all checks
+make check
+
+# Run the binary
 ./gcdiff --help
 ```
+
+### Running Tests
+
+The project has comprehensive unit tests with >95% coverage for core logic:
+
+```bash
+# Run all tests
+go test ./...
+
+# Run with coverage
+go test -coverprofile=coverage.out ./...
+go tool cover -html=coverage.out
+
+# Run with race detector
+go test -race ./...
+```
+
+Test structure:
+- `internal/config/config_test.go` - Configuration loading and filtering tests
+- `internal/compare/differ_test.go` - Comparison logic tests
+- `internal/compare/output_test.go` - Output formatting tests
+- `internal/compare/integration_test.go` - End-to-end integration tests
 
 ## Contributing
 
