@@ -1,6 +1,6 @@
 module github.com/tflynn3/gcdiff
 
-go 1.25.3
+go 1.24.0
 
 require (
 	cloud.google.com/go/compute v1.49.1
