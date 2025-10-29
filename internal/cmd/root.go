@@ -25,7 +25,7 @@ replicating environments or validating Terraform configurations.
 
 Example:
   gcdiff compute my-instance-1 my-instance-2 --project1=prod --project2=staging`,
-	Version: "0.3.0",
+	Version: "0.3.1",
 }
 
 // Execute runs the root command

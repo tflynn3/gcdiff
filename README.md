@@ -1,6 +1,6 @@
 # gcdiff
 
-[![Tests](https://github.com/tflynn3/gcdiff/actions/workflows/test.yml/badge.svg)](https://github.com/tflynn3/gcdiff/actions/workflows/test.yml)
+[![Tests](https://github.com/tflynn3/gcdiff/actions/workflows/test.yml/badge.svg?branch=master)](https://github.com/tflynn3/gcdiff/actions/workflows/test.yml)
 [![Go Report Card](https://goreportcard.com/badge/github.com/tflynn3/gcdiff)](https://goreportcard.com/report/github.com/tflynn3/gcdiff)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Release](https://img.shields.io/github/v/release/tflynn3/gcdiff)](https://github.com/tflynn3/gcdiff/releases)
