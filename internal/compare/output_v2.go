@@ -10,9 +10,6 @@ import (
 	"github.com/fatih/color"
 )
 
-var (
-	gray = color.New(color.FgHiBlack).SprintFunc()
-)
 
 // PrintGitStyleDiffV2 prints a diff with arrays shown inline with markers
 func PrintGitStyleDiffV2(w io.Writer, diff *Diff, name1, name2 string) {
@@ -143,7 +140,9 @@ func printArrayDiff(w io.Writer, fieldName string, arrayDiff *Diff, indent int) 
 
 	for key, child := range arrayDiff.Children {
 		var idx int
-		fmt.Sscanf(key, "[%d]", &idx)
+		if _, err := fmt.Sscanf(key, "[%d]", &idx); err != nil {
+			continue
+		}
 		indices = append(indices, idx)
 		childMap[idx] = child
 	}

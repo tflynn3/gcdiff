@@ -44,10 +44,10 @@ func init() {
 	rootCmd.PersistentFlags().BoolVar(&showAll, "show-all", false, "Show all fields including ignored ones")
 
 	// Bind flags to viper
-	viper.BindPFlag("project1", rootCmd.PersistentFlags().Lookup("project1"))
-	viper.BindPFlag("project2", rootCmd.PersistentFlags().Lookup("project2"))
-	viper.BindPFlag("format", rootCmd.PersistentFlags().Lookup("format"))
-	viper.BindPFlag("show-all", rootCmd.PersistentFlags().Lookup("show-all"))
+	_ = viper.BindPFlag("project1", rootCmd.PersistentFlags().Lookup("project1"))
+	_ = viper.BindPFlag("project2", rootCmd.PersistentFlags().Lookup("project2"))
+	_ = viper.BindPFlag("format", rootCmd.PersistentFlags().Lookup("format"))
+	_ = viper.BindPFlag("show-all", rootCmd.PersistentFlags().Lookup("show-all"))
 }
 
 func initConfig() {

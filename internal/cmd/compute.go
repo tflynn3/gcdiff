@@ -33,7 +33,7 @@ func init() {
 	rootCmd.AddCommand(computeCmd)
 	computeCmd.Flags().String("zone1", "", "Zone for first instance (required)")
 	computeCmd.Flags().String("zone2", "", "Zone for second instance (defaults to zone1)")
-	computeCmd.MarkFlagRequired("zone1")
+	_ = computeCmd.MarkFlagRequired("zone1")
 }
 
 // Removed runCompute - now using runResource via delegation

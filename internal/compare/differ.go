@@ -20,11 +20,11 @@ const (
 
 // Diff represents a difference between two values
 type Diff struct {
-	Path     string                 `json:"path"`
-	Type     DiffType               `json:"type"`
-	Value1   interface{}            `json:"value1,omitempty"`
-	Value2   interface{}            `json:"value2,omitempty"`
-	Children map[string]*Diff       `json:"children,omitempty"`
+	Path     string           `json:"path"`
+	Type     DiffType         `json:"type"`
+	Value1   interface{}      `json:"value1,omitempty"`
+	Value2   interface{}      `json:"value2,omitempty"`
+	Children map[string]*Diff `json:"children,omitempty"`
 }
 
 // Differ performs deep comparison of objects
