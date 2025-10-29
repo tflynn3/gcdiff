@@ -152,26 +152,43 @@ func (d *Differ) compareValues(val1, val2 interface{}, path string) *Diff {
 }
 
 func (d *Differ) compareArrays(arr1, arr2 []interface{}, path string) *Diff {
-	if len(arr1) != len(arr2) {
-		return &Diff{
-			Path:   path,
-			Type:   DiffTypeModified,
-			Value1: arr1,
-			Value2: arr2,
-		}
-	}
-
 	diff := &Diff{
 		Path:     path,
 		Type:     DiffTypeEqual,
 		Children: make(map[string]*Diff),
 	}
 
-	for i := 0; i < len(arr1); i++ {
+	maxLen := len(arr1)
+	if len(arr2) > maxLen {
+		maxLen = len(arr2)
+	}
+
+	for i := 0; i < maxLen; i++ {
 		indexPath := fmt.Sprintf("%s[%d]", path, i)
-		childDiff := d.compareValues(arr1[i], arr2[i], indexPath)
-		if childDiff.Type != DiffTypeEqual {
-			diff.Children[fmt.Sprintf("[%d]", i)] = childDiff
+		key := fmt.Sprintf("[%d]", i)
+
+		// Element exists in both arrays - compare them
+		if i < len(arr1) && i < len(arr2) {
+			childDiff := d.compareValues(arr1[i], arr2[i], indexPath)
+			if childDiff.Type != DiffTypeEqual {
+				diff.Children[key] = childDiff
+				diff.Type = DiffTypeModified
+			}
+		} else if i >= len(arr1) {
+			// Element only exists in arr2 - it was added
+			diff.Children[key] = &Diff{
+				Path:   indexPath,
+				Type:   DiffTypeAdded,
+				Value2: arr2[i],
+			}
+			diff.Type = DiffTypeModified
+		} else {
+			// Element only exists in arr1 - it was removed
+			diff.Children[key] = &Diff{
+				Path:   indexPath,
+				Type:   DiffTypeRemoved,
+				Value1: arr1[i],
+			}
 			diff.Type = DiffTypeModified
 		}
 	}
