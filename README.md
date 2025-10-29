@@ -65,6 +65,35 @@ gcdiff compute instance-1 instance-2 \
 gcloud auth application-default login
 ```
 
+## Same-Project vs Cross-Project Comparisons
+
+`gcdiff` automatically adjusts its behavior based on comparison context:
+
+### Same-Project Comparison
+When comparing resources within the same project (default behavior), `gcdiff` automatically ignores:
+- Resource names (must be unique within a project)
+- Self-links (contain resource names)
+- Auto-generated IDs and timestamps
+
+This is useful for comparing similar resources in the same environment.
+
+### Cross-Project Comparison
+When comparing resources across different projects (`--project1` ≠ `--project2`), `gcdiff` **includes** resource names and identifiers in the comparison. This is perfect for:
+- Validating that a resource in one project matches another project (same name, same config)
+- Terraform validation: ensuring your Terraform creates resources that match production
+- Environment parity checks: prod vs staging
+
+Example cross-project comparison:
+```bash
+# Verify staging instance matches prod configuration
+gcdiff compute web-server web-server \
+  --project1=my-prod-project \
+  --project2=my-staging-project \
+  --zone1=us-central1-a
+```
+
+If both instances are named "web-server" and have identical configurations, gcdiff will report no differences (except auto-generated fields like timestamps).
+
 ## Configuration
 
 Create a `.gcdiff.yaml` file in your home directory or current directory to customize field filtering:

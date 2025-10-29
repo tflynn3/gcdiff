@@ -86,6 +86,17 @@ func runCompute(cmd *cobra.Command, args []string) error {
 		cfg = config.Default()
 	}
 
+	// If comparing within the same project, add resource-specific fields to ignore list
+	// (these will always differ for resources in the same project)
+	// For cross-project comparisons, we want to compare these fields
+	if project1 == project2 {
+		cfg.IgnoreFields = append(cfg.IgnoreFields,
+			"name",               // Instance names must differ in same project
+			"self_link",          // Self links contain instance names
+			"selfLink",           // camelCase variant
+		)
+	}
+
 	// Convert to JSON for comparison
 	data1, err := json.Marshal(inst1)
 	if err != nil {
