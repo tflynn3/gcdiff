@@ -96,6 +96,18 @@ var ResourceTypes = map[string]ResourceType{
 		DescribeCommand: "describe",
 		RequiredFlags:   []string{},
 	},
+	"iam-policy": {
+		Service:         "iam",
+		Resource:        "service-accounts",
+		DescribeCommand: "get-iam-policy",
+		RequiredFlags:   []string{},
+	},
+	"pubsub-topic-iam-policy": {
+		Service:         "pubsub",
+		Resource:        "topics",
+		DescribeCommand: "get-iam-policy",
+		RequiredFlags:   []string{},
+	},
 }
 
 // FetchResource fetches a resource using gcloud CLI
