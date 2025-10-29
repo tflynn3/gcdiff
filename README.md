@@ -1,5 +1,11 @@
 # gcdiff
 
+[![Tests](https://github.com/tflynn3/gcdiff/actions/workflows/test.yml/badge.svg)](https://github.com/tflynn3/gcdiff/actions/workflows/test.yml)
+[![Go Report Card](https://goreportcard.com/badge/github.com/tflynn3/gcdiff)](https://goreportcard.com/report/github.com/tflynn3/gcdiff)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Release](https://img.shields.io/github/v/release/tflynn3/gcdiff)](https://github.com/tflynn3/gcdiff/releases)
+[![Homebrew](https://img.shields.io/badge/Homebrew-tflynn3%2Ftap%2Fgcdiff-orange)](https://github.com/tflynn3/homebrew-tap)
+
 A terminal tool for comparing and auditing GCP resources across projects.
 
 `gcdiff` helps you identify exact differences between GCP resources, making it especially useful for:
