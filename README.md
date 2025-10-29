@@ -10,13 +10,13 @@ A terminal tool for comparing and auditing GCP resources across projects.
 
 ## Features
 
-- ✨ **Dynamic resource support** - compare **ANY** GCP resource type without explicit code
-- 🔍 **Deep comparison** of GCP resources with field-level granularity
-- 🎨 **Git-style diff output** with color-coded changes
-- ⚙️ **Configurable field filtering** to ignore auto-generated or timestamp fields
-- 🔐 **Uses gcloud auth** - leverages your existing authentication
-- 🌍 **Cross-project support** - compare resources across different GCP projects
-- 📦 **Easy installation** via Homebrew
+- **Dynamic resource support** - compare **ANY** GCP resource type without explicit code
+- **Deep comparison** of GCP resources with field-level granularity
+- **Git-style diff output** with color-coded changes
+- **Configurable field filtering** to ignore auto-generated or timestamp fields
+- **Uses gcloud auth** - leverages your existing authentication
+- **Cross-project support** - compare resources across different GCP projects
+- **Easy installation** via Homebrew
 
 ### Instantly Supported Resources
 
@@ -162,7 +162,7 @@ gcdiff compute instance-1 instance-2 --config=/path/to/config.yaml
 
 ## Supported Resources
 
-**All GCP resources are supported dynamically!** 🎉
+**All GCP resources are supported dynamically!**
 
 The tool uses `gcloud` CLI commands under the hood, which means any resource that gcloud can describe is automatically supported. No code changes needed to add support for new resource types!
 
