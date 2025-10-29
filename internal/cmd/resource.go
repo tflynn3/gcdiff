@@ -156,7 +156,7 @@ func runResource(cmd *cobra.Command, args []string) error {
 	case "diff":
 		fallthrough
 	default:
-		compare.PrintGitStyleDiff(cmd.OutOrStdout(), diff, name1, name2)
+		compare.PrintGitStyleDiffV2(cmd.OutOrStdout(), diff, name1, name2)
 	}
 
 	return nil
