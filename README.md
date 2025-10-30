@@ -57,47 +57,54 @@ Download pre-built binaries from the [releases page](https://github.com/tflynn3/
 
 ## Quick Start
 
-### Compute Instances
-```bash
-# Compare two instances (backward-compatible command)
-gcdiff compute instance-1 instance-2 \
-  --project1=my-project \
-  --zone1=us-central1-a
+### How It Works
 
-# Or use the universal resource command
-gcdiff resource compute instance-1 instance-2 \
-  --project1=my-project \
-  --zone1=us-central1-a
+Use quoted gcloud resource paths that match the gcloud command structure:
+
+```bash
+# Format: gcdiff resource "<service> <resource>" name-1 name-2 [flags]
+# Matches: gcloud <service> <resource> describe <name>
 ```
 
-### Any GCP Resource
+### Examples
+
 ```bash
-# Firewall rules
-gcdiff resource firewall my-rule-1 my-rule-2 \
+# Compute instances (from: gcloud compute instances describe)
+gcdiff resource "compute instances" instance-1 instance-2 \
+  --project1=my-project \
+  --zone1=us-central1-a
+
+# Firewall rules (from: gcloud compute firewall-rules describe)
+gcdiff resource "compute firewall-rules" rule-1 rule-2 \
   --project1=my-project
 
-# Storage buckets
-gcdiff resource storage my-bucket-1 my-bucket-2 \
+# Storage buckets (from: gcloud storage buckets describe)
+gcdiff resource "storage buckets" bucket-1 bucket-2 \
   --project1=my-project
 
-# Cloud Run services
-gcdiff resource run my-service-1 my-service-2 \
+# Cloud Run services (from: gcloud run services describe)
+gcdiff resource "run services" service-1 service-2 \
   --project1=my-project \
   --region1=us-central1
 
-# VPC networks
-gcdiff resource network my-vpc-1 my-vpc-2 \
+# Pub/Sub topics (from: gcloud pubsub topics describe)
+gcdiff resource "pubsub topics" topic-1 topic-2 \
   --project1=my-project
 
-# Cloud SQL instances
-gcdiff resource sql my-db-1 my-db-2 \
+# Cloud SQL instances (from: gcloud sql instances describe)
+gcdiff resource "sql instances" instance-1 instance-2 \
   --project1=my-project
+
+# GKE clusters (from: gcloud container clusters describe)
+gcdiff resource "container clusters" cluster-1 cluster-2 \
+  --project1=my-project \
+  --zone1=us-central1-a
 ```
 
 ### Cross-Project Comparison
 ```bash
 # Verify staging matches production
-gcdiff resource compute web-server web-server \
+gcdiff resource "compute instances" web-server web-server \
   --project1=my-prod-project \
   --project2=my-staging-project \
   --zone1=us-central1-a
@@ -109,13 +116,20 @@ Use the `--iam` flag to include IAM bindings in your comparison. This works for 
 
 ```bash
 # Compare Pub/Sub subscriptions including IAM bindings
-gcdiff resource "pubsub subscriptions" sub-1 sub-2 --project1=my-project --iam
+gcdiff resource "pubsub subscriptions" sub-1 sub-2 \
+  --project1=my-project \
+  --iam
 
 # Compare Cloud Run services including IAM bindings
-gcdiff resource run service-1 service-2 --project1=my-project --region1=us-central1 --iam
+gcdiff resource "run services" service-1 service-2 \
+  --project1=my-project \
+  --region1=us-central1 \
+  --iam
 
 # Compare storage buckets including IAM bindings
-gcdiff resource storage bucket-1 bucket-2 --project1=my-project --iam
+gcdiff resource "storage buckets" bucket-1 bucket-2 \
+  --project1=my-project \
+  --iam
 ```
 
 The `--iam` flag fetches both:
@@ -123,6 +137,16 @@ The `--iam` flag fetches both:
 - IAM policy bindings (roles and members)
 
 This shows differences in resource configuration AND who has access to the resource in a single comparison.
+
+### Backward-Compatible Compute Command
+
+For convenience, there's a shorthand for compute instances:
+
+```bash
+gcdiff compute instance-1 instance-2 \
+  --project1=my-project \
+  --zone1=us-central1-a
+```
 
 ## Authentication
 
@@ -212,35 +236,29 @@ gcdiff compute instance-1 instance-2 --config=/path/to/config.yaml
 
 The tool uses `gcloud` CLI commands under the hood, which means any resource that gcloud can describe is automatically supported. No code changes needed to add support for new resource types!
 
-### Built-in Shortcuts
+Simply use the gcloud resource path in quotes matching the command structure:
+- `gcloud <service> <resource> describe` → `gcdiff resource "<service> <resource>"`
 
-For convenience, these resource types have built-in shortcuts:
-- `compute` - Compute Engine instances
-- `firewall` - Compute Engine firewall rules
-- `network` - VPC networks
-- `subnet` - VPC subnets
-- `disk` - Compute Engine disks
-- `storage` - Cloud Storage buckets
-- `run` - Cloud Run services
-- `sql` - Cloud SQL instances
-- `pubsub-topic` - Pub/Sub topics
-- `pubsub-subscription` - Pub/Sub subscriptions
-- `iam-service-account` - IAM service accounts
-
-### Advanced Usage
-
-You can also compare any GCP resource by providing the gcloud resource path:
+### More Examples
 
 ```bash
-# GKE clusters
+# GKE clusters (from: gcloud container clusters describe)
 gcdiff resource "container clusters" cluster-1 cluster-2 \
   --project1=my-project \
   --zone1=us-central1-a
 
-# Cloud Functions
+# Cloud Functions (from: gcloud functions describe)
 gcdiff resource "functions" function-1 function-2 \
   --project1=my-project \
   --region1=us-central1
+
+# IAM service accounts (from: gcloud iam service-accounts describe)
+gcdiff resource "iam service-accounts" sa-1 sa-2 \
+  --project1=my-project
+
+# VPC networks (from: gcloud compute networks describe)
+gcdiff resource "compute networks" network-1 network-2 \
+  --project1=my-project
 ```
 
 ## Example Output
