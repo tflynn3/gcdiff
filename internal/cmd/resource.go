@@ -17,37 +17,30 @@ var resourceCmd = &cobra.Command{
 	Use:   "resource [resource-type] [name-1] [name-2]",
 	Short: "Compare any two GCP resources (universal command)",
 	Long: `Compare any two GCP resources using gcloud CLI.
-This command dynamically supports ALL GCP resources without requiring explicit code.
+This command dynamically supports ALL GCP resources.
 
-Supported resource types (built-in shortcuts):
-  compute       - Compute Engine instances
-  storage       - Cloud Storage buckets
-  firewall      - Compute Engine firewall rules
-  network       - VPC networks
-  subnet        - VPC subnets
-  disk          - Compute Engine disks
-  run           - Cloud Run services
-  sql           - Cloud SQL instances
-  pubsub-topic  - Pub/Sub topics
-  pubsub-subscription - Pub/Sub subscriptions
-  iam-service-account - IAM service accounts
-
-You can also use ANY gcloud resource by providing the full gcloud path!
+Use the gcloud resource path (in quotes) matching the gcloud command structure:
 
 Examples:
-  # Compute instances
-  gcdiff resource compute instance-1 instance-2 --project1=proj --zone1=us-central1-a
+  # Compute instances (from: gcloud compute instances describe)
+  gcdiff resource "compute instances" instance-1 instance-2 --project1=proj --zone1=us-central1-a
 
-  # Storage buckets
-  gcdiff resource storage bucket-1 bucket-2 --project1=proj
+  # Storage buckets (from: gcloud storage buckets describe)
+  gcdiff resource "storage buckets" bucket-1 bucket-2 --project1=proj
 
-  # Firewall rules
-  gcdiff resource firewall rule-1 rule-2 --project1=proj
+  # Firewall rules (from: gcloud compute firewall-rules describe)
+  gcdiff resource "compute firewall-rules" rule-1 rule-2 --project1=proj
 
-  # Cloud Run services
-  gcdiff resource run service-1 service-2 --project1=proj --region1=us-central1
+  # Cloud Run services (from: gcloud run services describe)
+  gcdiff resource "run services" service-1 service-2 --project1=proj --region1=us-central1
 
-  # Any resource via custom gcloud path (advanced)
+  # Pub/Sub subscriptions (from: gcloud pubsub subscriptions describe)
+  gcdiff resource "pubsub subscriptions" sub-1 sub-2 --project1=proj
+
+  # Include IAM bindings in comparison
+  gcdiff resource "pubsub subscriptions" sub-1 sub-2 --project1=proj --iam
+
+  # GKE clusters (from: gcloud container clusters describe)
   gcdiff resource "container clusters" cluster-1 cluster-2 --project1=proj --zone1=us-central1-a`,
 	Args: cobra.ExactArgs(3),
 	RunE: runResource,
@@ -88,49 +81,27 @@ func runResource(cmd *cobra.Command, args []string) error {
 	ctx := context.Background()
 	fetcher := gcp.NewResourceFetcher()
 
-	// Check if this is a known resource type
-	resourceType, isKnown := gcp.ResourceTypes[resourceTypeStr]
-
 	// Build flags for resource 1
 	flags1 := buildResourceFlags(cmd, "1")
 
 	// Build flags for resource 2
 	flags2 := buildResourceFlags(cmd, "2")
 
+	// Build gcloud commands
+	gcloudCmd1 := buildGcloudCommand(resourceTypeStr, name1, project1, flags1)
+	gcloudCmd2 := buildGcloudCommand(resourceTypeStr, name2, project2, flags2)
+
 	// Fetch resources
-	var resource1, resource2 map[string]interface{}
-	var err error
+	fmt.Fprintf(cmd.OutOrStderr(), "Fetching resource with: gcloud %s...\n", gcloudCmd1)
+	resource1, err := fetcher.FetchResourceGeneric(ctx, gcloudCmd1)
+	if err != nil {
+		return fmt.Errorf("failed to fetch resource: %w", err)
+	}
 
-	if isKnown {
-		// Use structured fetcher for known resource types
-		fmt.Fprintf(cmd.OutOrStderr(), "Fetching %s '%s' from %s...\n", resourceTypeStr, name1, project1)
-		resource1, err = fetcher.FetchResource(ctx, resourceType, name1, project1, flags1)
-		if err != nil {
-			return fmt.Errorf("failed to fetch %s '%s': %w", resourceTypeStr, name1, err)
-		}
-
-		fmt.Fprintf(cmd.OutOrStderr(), "Fetching %s '%s' from %s...\n", resourceTypeStr, name2, project2)
-		resource2, err = fetcher.FetchResource(ctx, resourceType, name2, project2, flags2)
-		if err != nil {
-			return fmt.Errorf("failed to fetch %s '%s': %w", resourceTypeStr, name2, err)
-		}
-	} else {
-		// Treat resourceTypeStr as a custom gcloud resource path
-		// Build gcloud commands manually
-		gcloudCmd1 := buildGcloudCommand(resourceTypeStr, name1, project1, flags1)
-		gcloudCmd2 := buildGcloudCommand(resourceTypeStr, name2, project2, flags2)
-
-		fmt.Fprintf(cmd.OutOrStderr(), "Fetching resource with: gcloud %s...\n", gcloudCmd1)
-		resource1, err = fetcher.FetchResourceGeneric(ctx, gcloudCmd1)
-		if err != nil {
-			return fmt.Errorf("failed to fetch resource: %w", err)
-		}
-
-		fmt.Fprintf(cmd.OutOrStderr(), "Fetching resource with: gcloud %s...\n", gcloudCmd2)
-		resource2, err = fetcher.FetchResourceGeneric(ctx, gcloudCmd2)
-		if err != nil {
-			return fmt.Errorf("failed to fetch resource: %w", err)
-		}
+	fmt.Fprintf(cmd.OutOrStderr(), "Fetching resource with: gcloud %s...\n", gcloudCmd2)
+	resource2, err := fetcher.FetchResourceGeneric(ctx, gcloudCmd2)
+	if err != nil {
+		return fmt.Errorf("failed to fetch resource: %w", err)
 	}
 
 	// If --iam flag is set, also fetch IAM policies and merge them

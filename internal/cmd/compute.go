@@ -23,8 +23,8 @@ Examples:
   gcdiff compute instance-1 instance-2 --project1=my-project --zone1=us-central1-a --show-all`,
 	Args: cobra.ExactArgs(2),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		// Delegate to resource command with "compute" as the resource type
-		newArgs := append([]string{"compute"}, args...)
+		// Delegate to resource command with "compute instances" as the resource type
+		newArgs := append([]string{"compute instances"}, args...)
 		return runResource(cmd, newArgs)
 	},
 }
