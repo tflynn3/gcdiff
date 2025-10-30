@@ -63,6 +63,9 @@ func init() {
 	resourceCmd.Flags().String("region2", "", "Region for second resource (defaults to region1)")
 	resourceCmd.Flags().String("location1", "", "Location for first resource (alternative to zone/region)")
 	resourceCmd.Flags().String("location2", "", "Location for second resource (defaults to location1)")
+
+	// IAM policy flag
+	resourceCmd.Flags().Bool("iam", false, "Include IAM policy bindings in comparison (fetches both resource and IAM policy)")
 }
 
 func runResource(cmd *cobra.Command, args []string) error {
@@ -79,6 +82,8 @@ func runResource(cmd *cobra.Command, args []string) error {
 	if project1 == "" {
 		return fmt.Errorf("--project1 is required")
 	}
+
+	includeIAM, _ := cmd.Flags().GetBool("iam")
 
 	ctx := context.Background()
 	fetcher := gcp.NewResourceFetcher()
@@ -125,6 +130,28 @@ func runResource(cmd *cobra.Command, args []string) error {
 		resource2, err = fetcher.FetchResourceGeneric(ctx, gcloudCmd2)
 		if err != nil {
 			return fmt.Errorf("failed to fetch resource: %w", err)
+		}
+	}
+
+	// If --iam flag is set, also fetch IAM policies and merge them
+	if includeIAM {
+		iamCmd1 := buildGcloudIAMCommand(resourceTypeStr, name1, project1, flags1)
+		iamCmd2 := buildGcloudIAMCommand(resourceTypeStr, name2, project2, flags2)
+
+		fmt.Fprintf(cmd.OutOrStderr(), "Fetching IAM policy with: gcloud %s...\n", iamCmd1)
+		iamPolicy1, err := fetcher.FetchResourceGeneric(ctx, iamCmd1)
+		if err != nil {
+			fmt.Fprintf(cmd.OutOrStderr(), "Warning: could not fetch IAM policy for %s: %v\n", name1, err)
+		} else {
+			resource1["iamPolicy"] = iamPolicy1
+		}
+
+		fmt.Fprintf(cmd.OutOrStderr(), "Fetching IAM policy with: gcloud %s...\n", iamCmd2)
+		iamPolicy2, err := fetcher.FetchResourceGeneric(ctx, iamCmd2)
+		if err != nil {
+			fmt.Fprintf(cmd.OutOrStderr(), "Warning: could not fetch IAM policy for %s: %v\n", name2, err)
+		} else {
+			resource2["iamPolicy"] = iamPolicy2
 		}
 	}
 
@@ -191,6 +218,22 @@ func buildResourceFlags(cmd *cobra.Command, suffix string) map[string]string {
 
 func buildGcloudCommand(resourcePath, name, project string, flags map[string]string) string {
 	parts := []string{resourcePath, "describe", name}
+
+	if project != "" {
+		parts = append(parts, "--project="+project)
+	}
+
+	for key, value := range flags {
+		if value != "" {
+			parts = append(parts, fmt.Sprintf("--%s=%s", key, value))
+		}
+	}
+
+	return strings.Join(parts, " ")
+}
+
+func buildGcloudIAMCommand(resourcePath, name, project string, flags map[string]string) string {
+	parts := []string{resourcePath, "get-iam-policy", name}
 
 	if project != "" {
 		parts = append(parts, "--project="+project)

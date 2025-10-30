@@ -103,6 +103,27 @@ gcdiff resource compute web-server web-server \
   --zone1=us-central1-a
 ```
 
+### IAM Policy Comparison
+
+Use the `--iam` flag to include IAM bindings in your comparison. This works for ANY GCP resource that supports IAM policies:
+
+```bash
+# Compare Pub/Sub subscriptions including IAM bindings
+gcdiff resource "pubsub subscriptions" sub-1 sub-2 --project1=my-project --iam
+
+# Compare Cloud Run services including IAM bindings
+gcdiff resource run service-1 service-2 --project1=my-project --region1=us-central1 --iam
+
+# Compare storage buckets including IAM bindings
+gcdiff resource storage bucket-1 bucket-2 --project1=my-project --iam
+```
+
+The `--iam` flag fetches both:
+- Resource properties (configuration, metadata, etc.)
+- IAM policy bindings (roles and members)
+
+This shows differences in resource configuration AND who has access to the resource in a single comparison.
+
 ## Authentication
 
 `gcdiff` uses [Application Default Credentials](https://cloud.google.com/docs/authentication/application-default-credentials). Make sure you're authenticated with gcloud:
